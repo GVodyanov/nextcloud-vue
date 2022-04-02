@@ -1,40 +1,36 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import NcRichContenteditable from '../../../../src/components/NcRichContenteditable/NcRichContenteditable.vue'
 import Tribute from 'tributejs/dist/tribute.esm.js'
 
 // FIXME: find a way to use Tribute in JSDOM or test with e2e
-jest.mock('tributejs/dist/tribute.esm.js')
+vi.mock('tributejs/dist/tribute.esm.js')
 Tribute.mockImplementation(() => ({
-	attach: jest.fn(),
-	detach: jest.fn(),
+	attach: vi.fn(),
+	detach: vi.fn(),
 }))
 
 /**
  * Mount NcRichContentEditable
  *
  * @param {object} options mount options
- * @param {object} options.propsData mount options.propsData
- * @param {object} options.listeners mount options.listeners
+ * @param {object} options.props mount options.props
  * @param {object} options.attrs mount options.attrs
  * @return {object}
  */
-function mountNcRichContenteditable({ propsData, listeners, attrs } = {}) {
-	let currentValue = propsData?.value
+function mountNcRichContenteditable({ props, attrs } = {}) {
+	let currentValue = props?.value
 
 	const wrapper = mount(NcRichContenteditable, {
-		propsData: {
+		props: {
 			value: currentValue,
-			...propsData,
+			...props,
 		},
-		listeners: {
+		attrs: {
 			'update:value': ($event) => {
 				currentValue = $event
 				wrapper.setProps({ value: $event })
 			},
-			...listeners,
-		},
-		attrs: {
 			...attrs,
 		},
 		attachTo: document.body,
@@ -81,7 +77,7 @@ describe('NcRichContenteditable', () => {
 
 		await inputValue('Test Text')
 
-		await wrapper.trigger('keydown', { keyCode: 13 }) // Enter
+		await wrapper.trigger('keydown.enter') // Enter
 
 		expect(wrapper.emitted('submit')).toBeDefined()
 		expect(wrapper.emitted('submit')).toHaveLength(1)
@@ -92,10 +88,10 @@ describe('NcRichContenteditable', () => {
 
 		await wrapper.trigger('compositionstart')
 		await inputValue('猫')
-		await wrapper.trigger('keydown', { keyCode: 13 }) // Enter
+		await wrapper.trigger('keydown.enter') // Enter
 		await wrapper.trigger('compositionend')
 		await inputValue(' - means "Cat"')
-		await wrapper.trigger('keydown', { keyCode: 13 }) // Enter
+		await wrapper.trigger('keydown.enter') // Enter
 
 		expect(wrapper.emitted('submit')).toBeDefined()
 		expect(wrapper.emitted('submit')).toHaveLength(1)
@@ -103,27 +99,27 @@ describe('NcRichContenteditable', () => {
 
 	it('should proxy component events listeners to native event handlers', async () => {
 		const handlers = {
-			focus: jest.fn(),
-			paste: jest.fn(),
-			blur: jest.fn(),
+			onFocus: vi.fn(),
+			onPaste: vi.fn(),
+			onBlur: vi.fn(),
 		}
 		const { wrapper } = mountNcRichContenteditable({
-			listeners: handlers,
+			attrs: handlers,
 		})
 
 		await wrapper.trigger('focus')
 		await wrapper.trigger('paste', { clipboardData: { getData: () => 'PASTED_TEXT', files: [], items: {} } })
 		await wrapper.trigger('blur')
 
-		expect(handlers.focus).toHaveBeenCalledTimes(1)
-		expect(handlers.paste).toHaveBeenCalledTimes(1)
-		expect(handlers.blur).toHaveBeenCalledTimes(1)
+		expect(handlers.onFocus).toHaveBeenCalledTimes(1)
+		expect(handlers.onPaste).toHaveBeenCalledTimes(1)
+		expect(handlers.onBlur).toHaveBeenCalledTimes(1)
 	})
 
 	it('should has accessible placeholder from placeholder prop', async () => {
 		const PLACEHOLDER = 'TEST_PLACEHOLDER'
 		const { wrapper } = mountNcRichContenteditable({
-			propsData: {
+			props: {
 				placeholder: PLACEHOLDER,
 			},
 		})

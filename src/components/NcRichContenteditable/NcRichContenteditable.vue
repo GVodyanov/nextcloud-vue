@@ -33,7 +33,7 @@ Try mentioning user @Test01 or inserting emoji :smile
 <template>
 	<div>
 		<NcRichContenteditable
-			:value.sync="message"
+			v-model:value="message"
 			:auto-complete="autoComplete"
 			:maxlength="100"
 			:user-data="userData"
@@ -41,7 +41,7 @@ Try mentioning user @Test01 or inserting emoji :smile
 		<br>
 
 		<NcRichContenteditable
-			:value.sync="message"
+			v-model:value="message"
 			:auto-complete="autoComplete"
 			:maxlength="400"
 			:multiline="true"
@@ -225,7 +225,7 @@ export default {
 		aria-multiline="true"
 		class="rich-contenteditable__input"
 		role="textbox"
-		v-on="listeners"
+		v-bind="$attrs"
 		@input="onInput"
 		@compositionstart="isComposing = true"
 		@compositionend="isComposing = false"
@@ -507,7 +507,7 @@ export default {
 			 * As a result, it triggers handlers twice.
 			 * The v-on="listeners" directive should only set proxied native events handler without custom events
 			 */
-			const listeners = { ...this.$listeners }
+			const listeners = { ...this.$attrs }
 			delete listeners.paste
 			return listeners
 		},
@@ -559,7 +559,7 @@ export default {
 		// set to false.
 		this.$refs.contenteditable.contentEditable = this.canEdit
 	},
-	beforeDestroy() {
+	beforeUnmount() {
 		if (this.autocompleteTribute) {
 			this.autocompleteTribute.detach(this.$el)
 		}
