@@ -73,6 +73,7 @@ import { remarkPlaceholder, prepareTextNode } from './placeholder.js'
 
 import { unified } from 'unified'
 import markdown from 'remark-parse'
+import markdownGithub from 'remark-gfm'
 import breaks from 'remark-breaks'
 import remark2rehype from 'remark-rehype'
 import rehype2react from 'rehype-react'
@@ -172,6 +173,7 @@ export default {
 		renderMarkdown(h) {
 			const renderedMarkdown = unified()
 				.use(markdown)
+				.use(this.autolink ? markdownGithub : null)
 				.use(remarkAutolink, {
 					autolink: this.autolink,
 					useMarkdown: this.useMarkdown,
@@ -217,7 +219,9 @@ export default {
 					},
 					prefix: false,
 				})
-				.processSync(this.text)
+				.processSync(this.text.slice().replace(/\n{2,}/g, (match) => {
+					return '\n\u00A0'.repeat(match.length - 1) + '\n'
+				}))
 				.result
 
 			return h('div', { class: 'rich-text--wrapper' }, [
