@@ -321,12 +321,18 @@ export default {
 ```
 </docs>
 
-<script>
+<script lang="ts">
+import type { PropType } from 'vue'
+
+import { defineComponent, h, resolveComponent } from 'vue'
+
 import isSlotPopulated from '../../utils/isSlotPopulated.js'
 
-import { h, resolveComponent } from 'vue'
+const BUTTON_ALIGNMENT = ['start', 'start-reverse', 'center', 'center-reverse', 'end', 'end-reverse'] as const
+const BUTTON_TYPES = ['primary', 'secondary', 'tertiary', 'tertiary-no-background', 'tertiary-on-primary', 'error', 'warning', 'success'] as const
+const NATIVE_TYPES = ['submit', 'reset', 'button'] as const
 
-export default {
+export default defineComponent({
 	name: 'NcButton',
 
 	props: {
@@ -334,11 +340,14 @@ export default {
 		 * Set the text and icon alignment
 		 *
 		 * @default 'center'
+		 * @values 'start', 'start-reverse', 'center', 'center-reverse', 'end', 'end-reverse'
 		 */
 		alignment: {
-			type: String,
+			type: String as PropType<typeof BUTTON_ALIGNMENT[number]>,
 			default: 'center',
-			validator: (alignment) => ['start', 'start-reverse', 'center', 'center-reverse', 'end', 'end-reverse'].includes(alignment),
+			validator(alignment) {
+				return typeof alignment === 'string' && (BUTTON_ALIGNMENT as readonly string[]).includes(alignment)
+			},
 		},
 
 		/**
@@ -351,26 +360,29 @@ export default {
 
 		/**
 		 * Specifies the button type
-		 * Accepted values: primary, secondary, tertiary, tertiary-no-background, tertiary-on-primary, error, warning, success. If left empty,
-		 * the default button style will be applied.
+		 * If left empty, the default button style will be applied.
+		 *
+		 * @default 'secondary'
+		 * @values primary, secondary, tertiary, tertiary-no-background, tertiary-on-primary, error, warning, success
 		 */
 		type: {
-			type: String,
+			type: String as PropType<typeof BUTTON_TYPES[number]>,
 			validator(value) {
-				return ['primary', 'secondary', 'tertiary', 'tertiary-no-background', 'tertiary-on-primary', 'error', 'warning', 'success'].indexOf(value) !== -1
+				return typeof value === 'string' && (BUTTON_TYPES as readonly string[]).indexOf(value) !== -1
 			},
 			default: 'secondary',
 		},
 
 		/**
 		 * Specifies the button native type
-		 * Accepted values: submit, reset, button. If left empty,
-		 * the default "button" type will be used.
+		 * If left empty, the default "button" type will be used.
+		 *
+		 * @values 'submit', 'reset', 'button'
 		 */
 		nativeType: {
-			type: String,
+			type: String as PropType<typeof NATIVE_TYPES[number]>,
 			validator(value) {
-				return ['submit', 'reset', 'button'].indexOf(value) !== -1
+				return typeof value === 'string' && (NATIVE_TYPES as readonly string[]).includes(value)
 			},
 			default: 'button',
 		},
@@ -479,7 +491,7 @@ export default {
 	 * @return {object|undefined} The created VNode
 	 */
 	render() {
-		const text = this.$slots.default?.()?.[0]?.children?.trim?.()
+		const text = (this.$slots.default?.()?.[0]?.children as string|undefined)?.trim?.()
 			|| this.$slots.default?.()?.[0]?.children?.[0]?.children?.trim?.()
 
 		const hasText = isSlotPopulated(this.$slots.default?.()) && !!text
@@ -488,7 +500,7 @@ export default {
 		/**
 		 * Always fill either the text prop or the ariaLabel one.
 		 */
-		if (!text && !this.ariaLabel) {
+		if (!hasText && !this.ariaLabel) {
 			console.warn('You need to fill either the text or the ariaLabel props in the button component.', {
 				text,
 				ariaLabel: this.ariaLabel,
@@ -496,7 +508,7 @@ export default {
 			this)
 		}
 
-		const renderButton = ({ navigate, isActive } = {}) => h((this.to || !this.href) ? 'button' : 'a',
+		const renderButton = ({ navigate, isActive }: {navigate?: (ev: Event) => void, isActive?: boolean } = {}) => h((this.to || !this.href) ? 'button' : 'a',
 			{
 				class: [
 					'button-vue',
@@ -564,8 +576,7 @@ export default {
 		// Otherwise we simply return the button
 		return renderButton()
 	},
-}
-
+})
 </script>
 
 <style lang="scss" scoped>
