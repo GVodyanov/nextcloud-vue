@@ -29,9 +29,9 @@ const entryPoints = {
 
 	// while migrating the components this is commented out and only the button is included
 
-	...globSync('src/components/NcButton/index.js').reduce((acc, item) => {
+	...globSync('src/components/NcButton/index.ts').reduce((acc, item) => {
 		const name = item
-	 		.replace('/index.js', '')
+			.replace('/index.ts', '')
 			.replace('src/components/', 'Components/')
 		acc[name] = join(__dirname, item)
 		return acc
@@ -61,7 +61,7 @@ const entryPoints = {
 	// 	return acc
 	// }, {}),
 
-	index: resolve(__dirname, 'src/index.js'),
+	index: resolve(__dirname, 'src/index.ts'),
 }
 
 // Plugin for stripping out <docs> sections from vue files

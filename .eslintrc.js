@@ -9,7 +9,7 @@ module.exports = {
 		appVersion: true,
 	},
 	extends: [
-		'@nextcloud',
+		'@nextcloud/eslint-config/typescript',
 	],
 	plugins: [
 		'cypress',

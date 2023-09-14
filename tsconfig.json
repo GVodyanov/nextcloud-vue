@@ -1,8 +1,9 @@
 {
   "extends": "@vue/tsconfig",
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./src/**/*.vue"],
   "exclude": ["./src/**/*.cy.ts"],
   "compilerOptions": {
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "target": "ESNext",
@@ -11,5 +12,6 @@
     "strict": true,
     "noImplicitAny": false,
     "outDir": "./dist",
+    "rootDir": "./src"
   }
 }
