@@ -27,11 +27,4 @@ module.exports = {
 		'src/components/NcVNodes*/*.vue',
 		'src/utils/IsMobileState.js',
 	],
-	parserOptions: {
-		babelOptions: {
-			plugins: [
-				'@babel/plugin-syntax-import-assertions',
-			],
-		},
-	},
 }
