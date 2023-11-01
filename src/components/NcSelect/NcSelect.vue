@@ -903,7 +903,7 @@ export default {
 
 				const addClass = {
 					name: 'addClass',
-					fn(_middlewareArgs) {
+					fn(/* middlewareArgs */) {
 						dropdownMenu.classList.add('vs__dropdown-menu--floating')
 						return {}
 					},
@@ -983,15 +983,12 @@ export default {
 		},
 
 		propsToForward() {
-			const {
-				// Props handled by this component
-				inputClass,
-				noWrap,
-				placement,
-				userSelect,
-				// Props to forward
-				...initialPropsToForward
-			} = this.$props
+			const initialPropsToForward = { ...this.$props }
+			// Props handled by this component
+			delete initialPropsToForward.inputClass
+			delete initialPropsToForward.noWrap
+			delete initialPropsToForward.placement
+			delete initialPropsToForward.userSelect
 
 			const propsToForward = {
 				...initialPropsToForward,

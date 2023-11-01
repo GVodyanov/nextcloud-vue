@@ -129,7 +129,7 @@ export default {
 	},
 
 	methods: {
-		toggleInput(event) {
+		toggleInput(/* event */) {
 			// by clicking we also trigger the change event
 			this.$refs.label.click()
 		},

@@ -95,7 +95,7 @@ const overrides = defineConfig({
 	test: {
 		environment: 'jsdom',
 		setupFiles: resolve(__dirname, './tests/setup.js'),
-		exclude:[
+		exclude: [
 			...configDefaults.exclude,
 			'./tests/unit/components/NcAppNavigation',
 			'./tests/unit/components/NcAppSidebar',

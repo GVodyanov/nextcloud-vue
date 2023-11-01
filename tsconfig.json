@@ -13,5 +13,8 @@
     "noImplicitAny": false,
     "outDir": "./dist",
     "rootDir": "./src"
+  },
+  "vueCompilerOptions": {
+    "target": 3.3
   }
 }

@@ -14,6 +14,19 @@ module.exports = {
 	plugins: [
 		'cypress',
 	],
+	rules: {
+		'jsdoc/check-tag-names': [
+			'warn',
+			{
+				definedTags: [
+					'values', // required for vue-styleguideist
+					'notExported',
+					'packageDocumentation',
+					'jest-environment',
+				],
+			},
+		],
+	},
 	ignorePatterns: [
 		'src/components/NcAppContent*/*.vue',
 		'src/components/NcAppNavigation*/*.vue',

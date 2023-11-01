@@ -76,5 +76,10 @@ module.exports = async () => {
 		TRANSLATIONS: JSON.stringify(translations),
 	}))
 
+	webpackConfig.resolve.extensionAlias = {
+		'.js': ['.ts', '.js'],
+		'.mjs': ['.mts', '.mjs'],
+	}
+
 	return webpackConfig
 }

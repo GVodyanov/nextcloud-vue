@@ -225,10 +225,8 @@ export default {
 		},
 		/**
 		 * Add the hovering state on drag enter
-		 *
-		 * @param {object} e The drag enter event
 		 */
-		dragEnter(e) {
+		dragEnter(/* event */) {
 			/**
 			 * Don't do anything if dropping is disabled.
 			 */
