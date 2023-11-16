@@ -33,7 +33,7 @@ Try mentioning user @Test01 or inserting emoji :smile
 <template>
 	<div>
 		<NcRichContenteditable
-			:value.sync="message"
+			v-model="message"
 			:auto-complete="autoComplete"
 			:maxlength="100"
 			:user-data="userData"
@@ -41,7 +41,7 @@ Try mentioning user @Test01 or inserting emoji :smile
 		<br>
 
 		<NcRichContenteditable
-			:value.sync="message"
+			v-model="message"
 			:auto-complete="autoComplete"
 			:maxlength="400"
 			:multiline="true"
@@ -225,7 +225,6 @@ export default {
 		aria-multiline="true"
 		class="rich-contenteditable__input"
 		role="textbox"
-		v-on="listeners"
 		@input="onInput"
 		@compositionstart="isComposing = true"
 		@compositionend="isComposing = false"
@@ -258,7 +257,7 @@ export default {
 	mixins: [richEditor],
 
 	props: {
-		value: {
+		modelValue: {
 			type: String,
 			default: '',
 			required: true,
@@ -335,7 +334,7 @@ export default {
 	emits: [
 		'submit',
 		'paste',
-		'update:value',
+		'update:modelValue',
 		'smart-picker-submit',
 	],
 
@@ -431,7 +430,7 @@ export default {
 			// Represent the raw untrimmed text of the contenteditable
 			// serves no other purpose than to check whether the
 			// content is empty or not
-			localValue: this.value,
+			localValue: this.modelValue,
 
 			// Is in text composition session in IME
 			isComposing: false,
@@ -507,7 +506,7 @@ export default {
 			 * As a result, it triggers handlers twice.
 			 * The v-on="listeners" directive should only set proxied native events handler without custom events
 			 */
-			const listeners = { ...this.$listeners }
+			const listeners = { ...this.$attrs }
 			delete listeners.paste
 			return listeners
 		},
@@ -521,8 +520,8 @@ export default {
 		value() {
 			const html = this.$refs.contenteditable.innerHTML
 			// Compare trimmed versions to be safe
-			if (this.value.trim() !== this.parseContent(html).trim()) {
-				this.updateContent(this.value)
+			if (this.modelValue.trim() !== this.parseContent(html).trim()) {
+				this.updateContent(this.modelValue)
 			}
 		},
 	},
@@ -553,13 +552,13 @@ export default {
 		}
 
 		// Update default value
-		this.updateContent(this.value)
+		this.updateContent(this.modelValue)
 
 		// Removes the contenteditable attribute at first load if the prop is
 		// set to false.
 		this.$refs.contenteditable.contentEditable = this.canEdit
 	},
-	beforeDestroy() {
+	beforeUnmount() {
 		if (this.autocompleteTribute) {
 			this.autocompleteTribute.detach(this.$el)
 		}
@@ -685,7 +684,7 @@ export default {
 		updateValue(htmlOrText) {
 			const text = this.parseContent(htmlOrText)
 			this.localValue = text
-			this.$emit('update:value', text)
+			this.$emit('update:modelValue', text)
 		},
 
 		/**
