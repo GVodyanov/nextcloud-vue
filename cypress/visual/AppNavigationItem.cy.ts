@@ -1,6 +1,6 @@
-import { mount } from 'cypress/vue2'
-import Vue, { defineComponent } from 'vue'
-import VueRouter from 'vue-router'
+import { mount } from 'cypress/vue'
+import { defineComponent } from 'vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import NcAppNavigationItem from '../../src/components/NcAppNavigationItem/NcAppNavigationItem.vue'
 
@@ -11,7 +11,8 @@ describe('NcAppNavigationItem', () => {
 			components: { NcAppNavigationItem },
 		})
 
-		const router = new VueRouter({
+		const router = createRouter({
+			history: createWebHashHistory(),
 			routes: [
 				{ path: '/' },
 				{ path: '/foo' },
@@ -19,8 +20,6 @@ describe('NcAppNavigationItem', () => {
 		})
 
 		beforeEach(() => {
-			Vue.use(VueRouter)
-
 			mount(RouterComponent as never, {
 				extensions: {
 					plugins: [router],
