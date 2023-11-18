@@ -493,23 +493,6 @@ export default {
 		canEdit() {
 			return this.contenteditable && !this.disabled
 		},
-
-		/**
-		 * Proxied native event handlers without custom event handlers
-		 *
-		 * @return {Record<string, Function>}
-		 */
-		listeners() {
-			/**
-			 * All component's event handlers are set as native event handlers with by v-on directive.
-			 * The component also raised custom events manually by $emit for corresponding events.
-			 * As a result, it triggers handlers twice.
-			 * The v-on="listeners" directive should only set proxied native events handler without custom events
-			 */
-			const listeners = { ...this.$attrs }
-			delete listeners.paste
-			return listeners
-		},
 	},
 
 	watch: {
