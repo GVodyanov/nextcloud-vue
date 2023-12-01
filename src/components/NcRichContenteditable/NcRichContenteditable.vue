@@ -225,6 +225,8 @@ export default {
 		aria-multiline="true"
 		class="rich-contenteditable__input"
 		role="textbox"
+		:aria-controls="isTributeOpen ? 'tribute-id' : undefined"
+		:aria-activedescendant="isTributeOpen && activedescendant ? activedescendant : undefined"
 		v-on="listeners"
 		@input="onInput"
 		@compositionstart="isComposing = true"
@@ -233,7 +235,9 @@ export default {
 		@keydown.enter.exact="onEnter"
 		@keydown.ctrl.enter.exact.stop.prevent="onCtrlEnter"
 		@paste="onPaste"
-		@keyup.stop.prevent.capture="onKeyUp" />
+		@keyup.stop.prevent.capture="onKeyUp"
+		@tribute-active-true="isTributeOpen = true"
+		@tribute-active-false="isTributeOpen = false" />
 </template>
 
 <script>
@@ -341,6 +345,7 @@ export default {
 
 	data() {
 		return {
+			isTributeOpen: false,
 			textSmiles: [],
 			tribute: null,
 			autocompleteOptions: {
@@ -375,7 +380,7 @@ export default {
 						return item.original
 					}
 
-					return `<span class="tribute-container-emoji__item__emoji">${item.original.native}</span> :${item.original.short_name}`
+					return `<span id="${Math.random().toString(32).substring(3, 10)}"><span class="tribute-container-emoji__item__emoji">${item.original.native}</span> :${item.original.short_name}</span>`
 				},
 				// Hide if no results
 				noMatchTemplate: () => t('No emoji found'),
@@ -435,6 +440,8 @@ export default {
 
 			// Is in text composition session in IME
 			isComposing: false,
+
+			activedescendant: null,
 		}
 	},
 
@@ -514,6 +521,22 @@ export default {
 	},
 
 	watch: {
+		isTributeOpen(isOpen) {
+			const wrapper = this.menuContainer.querySelector('.tribute-container-emoji')
+			if (isOpen && wrapper) {
+				wrapper.id = 'tribute-id'
+				// window.addEventListener('keydown', (event) => {
+				// 	console.log('keypress', wrapper, wrapper.querySelector('.highlight [id]'))
+				// 	if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+				// 		this.activedescendant = wrapper.querySelector('.highlight [id]').id
+				// 	}
+				// })
+				// wrapper.addEventListener('mousemove', (event) => {
+				// 	console.log('mousemove', wrapper, wrapper.querySelector('.highlight [id]'))
+				// 	this.activedescendant = wrapper.querySelector('.highlight [id]').id
+				// })
+			}
+		},
 		/**
 		 * If the parent value change, we compare the plain text rendering
 		 * If it's different, we render everything and update the main content
@@ -796,6 +819,26 @@ export default {
 		onKeyUp(event) {
 			// prevent tribute from opening on keyup
 			event.stopImmediatePropagation()
+
+			if (this.isTributeOpen) {
+				const wrapper = this.menuContainer.querySelector('.tribute-container-emoji')
+				this.activedescendant = wrapper.querySelector('.highlight [id]').id
+			}
+
+			// console.log(wrapper)
+			// if (isOpen) {
+			// 	wrapper.id = 'tribute-id'
+			// 	window.addEventListener('keydown', (event) => {
+			// 		console.log('keypress', wrapper, wrapper.querySelector('.highlight [id]'))
+			// 		if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+			// 			this.activedescendant = wrapper.querySelector('.highlight [id]').id
+			// 		}
+			// 	})
+			// 	wrapper.addEventListener('mousemove', (event) => {
+			// 		console.log('mousemove', wrapper, wrapper.querySelector('.highlight [id]'))
+			// 		this.activedescendant = wrapper.querySelector('.highlight [id]').id
+			// 	})
+			// }
 		},
 	},
 }
